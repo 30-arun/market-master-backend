@@ -8,8 +8,7 @@ Add your database credentials to core/settings/.env file
 
 
 
-
-After that run following lines in order:
+### After that run following lines in order:
   
   pip install -r requirements.txt
 
