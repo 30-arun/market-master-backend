@@ -68,3 +68,20 @@ class AppointmentSerializer(serializers.ModelSerializer):
         
     def get_time_since_updated(self, obj):
         return obj.time_since_updated()
+
+
+class BookingSerializer(serializers.ModelSerializer):
+    time_since_updated = serializers.SerializerMethodField(read_only=True)
+    
+    class Meta:
+        model = Booking
+        fields = '__all__'
+        
+    def get_time_since_updated(self, obj):
+        return obj.time_since_updated()
+        
+class AvailableTimeSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = AvailableTime
+        fields = '__all__'
