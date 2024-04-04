@@ -15,5 +15,7 @@ urlpatterns = [
     path('qrcode-history/', QrcodeView.as_view(), name='qrcode-history'),
     path('get-started/', GetStartedViewSet.as_view(), name='get-started'),    
     path('contact/', ContactView.as_view(), name='contact'),
-    path('appointment/', AppointmentView.as_view(), name='appointment'),   
+    path('appointment/', AppointmentView.as_view(), name='appointment'),  
+    path('booking/', BookingView.as_view(), name='booking'),
+    path('available-time/', AvailableTimeView.as_view(), name='available-time'),
 ]

@@ -175,3 +175,46 @@ class AppointmentView(APIView):
 		appointments = Appointment.objects.filter(user_template_id=user_template_id, id=appointment_id)
 		appointments.delete()
 		return Response(status=status.HTTP_204_NO_CONTENT)
+
+class BookingView(APIView):
+    	
+	def get(self, request, format=None):
+		user_template_id = request.GET.get('template_id')
+		bookings = Booking.objects.filter(user_template_id=user_template_id)
+		serializer = BookingSerializer(bookings, many=True)
+		return Response(serializer.data)
+	
+	def post(self, request, format=None):
+		serializer = BookingSerializer(data=request.data)
+		if serializer.is_valid():
+			serializer.save()
+			return Response(serializer.data, status=status.HTTP_201_CREATED)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+	
+	def delete(self, request, format=None):
+		user_template_id = request.GET.get('template_id')
+		booking_id = request.GET.get('booking_id')
+		bookings = Booking.objects.filter(user_template_id=user_template_id, id=booking_id)
+		bookings.delete()
+		return Response(status=status.HTTP_204_NO_CONTENT)
+
+class AvailableTimeView(APIView):
+	def get(self, request, format=None):
+		user_template_id = request.GET.get('template_id')
+		available_times = AvailableTime.objects.filter(user_template_id=user_template_id)
+		serializer = AvailableTimeSerializer(available_times, many=True)
+		return Response(serializer.data)
+
+	def post(self, request, format=None):
+		serializer = AvailableTimeSerializer(data=request.data)
+		if serializer.is_valid():
+			serializer.save()
+			return Response(serializer.data, status=status.HTTP_201_CREATED)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+	def delete(self, request, format=None):
+		user_template_id = request.GET.get('template_id')
+		available_time_id = request.GET.get('available_time_id')
+		available_times = AvailableTime.objects.filter(user_template_id=user_template_id, id=available_time_id)
+		available_times.delete()
+		return Response(status=status.HTTP_204_NO_CONTENT)
