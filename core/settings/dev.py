@@ -5,10 +5,6 @@ import os
 
 DEBUG = True
 
-env = environ.Env()
-# reading env file
-environ.Env.read_env()
-
 SECRET_KEY= env("SECRET_KEY")
 
 CORS_ALLOWED_ORIGINS = [
