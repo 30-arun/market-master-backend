@@ -29,7 +29,7 @@ TEMPLATES_DIR = os.path.join(ROOT_BASE_DIR,'templates')
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '13.37.204.72']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'marketmaster.me']
 
 
 # Application definition

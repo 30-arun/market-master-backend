@@ -22,10 +22,10 @@ from django.conf.urls.static import static
 
 urlpatterns = [
 	path('admin/', admin.site.urls),
-	path('product/', include('products.urls')),
-	path('order/', include('orders.urls')),
-	re_path(r'^account/', include('account.urls', namespace='account-namespace')),
-	re_path(r'^store/', include('store_app.urls', namespace='store-app-namespace')),
+	path('api/product/', include('products.urls')),
+	path('api/order/', include('orders.urls')),
+	re_path(r'^api/account/', include('account.urls', namespace='account-namespace')),
+	re_path(r'^api/store/', include('store_app.urls', namespace='store-app-namespace')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
