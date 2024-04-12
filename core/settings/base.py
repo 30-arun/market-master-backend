@@ -21,9 +21,10 @@ env = environ.Env()
 environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR =      os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ROOT_BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-TEMPLATES_DIR = os.path.join(ROOT_BASE_DIR,'templates')
+REAL_BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+TEMPLATES_DIR = os.path.join(REAL_BASE_DIR, 'market-master-frontend', 'out')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -31,6 +32,13 @@ TEMPLATES_DIR = os.path.join(ROOT_BASE_DIR,'templates')
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'marketmaster.me']
 
+# cors headers allowed
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+]
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+]
 
 # Application definition
 
@@ -52,6 +60,9 @@ INSTALLED_APPS = [
     'products',
     'orders',
 ]
+
+APPEND_SLASH = True
+
 
 MIDDLEWARE = [
 	'django.middleware.security.SecurityMiddleware',
@@ -134,7 +145,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = (os.path.join(ROOT_BASE_DIR, 'static'),)
+STATICFILES_DIRS = (os.path.join(ROOT_BASE_DIR, 'static'), TEMPLATES_DIR, )
 STATIC_ROOT = os.path.join(ROOT_BASE_DIR,'staticfiles')
 
 STATICFILES_FINDERS = (
