@@ -30,7 +30,7 @@ TEMPLATES_DIR = os.path.join(REAL_BASE_DIR, 'market-master-frontend', 'out')
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'marketmaster.me']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'marketmaster.me', 'www.marketmaster.me']
 
 # cors headers allowed
 CORS_ALLOWED_ORIGINS = [
