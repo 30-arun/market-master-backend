@@ -7,6 +7,8 @@ from .models import *
 from .serializers import *
 import stripe
 from django.contrib.auth import get_user_model
+from django.core.mail import send_mail
+from rest_framework.exceptions import NotFound
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 User = get_user_model()
@@ -218,3 +220,26 @@ class AvailableTimeView(APIView):
 		available_times = AvailableTime.objects.filter(user_template_id=user_template_id, id=available_time_id)
 		available_times.delete()
 		return Response(status=status.HTTP_204_NO_CONTENT)
+
+class ContactRepliedView(APIView):
+    def post(self, request, format=None):
+        contact_id = request.data.get('contact_id')
+        replied_message = request.data.get('replied_message')
+        if not contact_id or not replied_message:
+            return Response({"error": "Missing contact_id or replied_message."}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            contact = Contact.objects.get(id=contact_id)
+        except Contact.DoesNotExist:
+            raise NotFound(detail="Contact not found.")
+        self.send_replied_email(contact, replied_message)
+        contact.replied = True
+        contact.replied_message = replied_message
+        contact.save()
+        return Response({"message": "Replied status updated and email sent."}, status=status.HTTP_200_OK)
+    
+    def send_replied_email(self, contact, replied_message):
+        subject = 'Market Master Contact Replied'
+        message = replied_message
+        from_email = settings.EMAIL_HOST_USER
+        recipient_list = [contact.email]
+        send_mail(subject, message, from_email, recipient_list)

@@ -18,4 +18,5 @@ urlpatterns = [
     path('appointment/', AppointmentView.as_view(), name='appointment'),  
     path('booking/', BookingView.as_view(), name='booking'),
     path('available-time/', AvailableTimeView.as_view(), name='available-time'),
+    path('contact-replied/', ContactRepliedView.as_view(), name='contact-replied'),
 ]
