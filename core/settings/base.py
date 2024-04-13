@@ -34,7 +34,10 @@ ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '.marketmaster.me']
 
 # cors headers allowed
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000","https://marketmaster.me","https://*.marketmaster.me"
+    "http://localhost:3000"
+]
+CORS_ALLOWED_ORIGINS_REGEX = [
+    r"^https://(\w+\.)?marketmaster\.me$",
 ]
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000","https://marketmaster.me","https://*.marketmaster.me"
