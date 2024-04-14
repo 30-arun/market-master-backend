@@ -240,6 +240,6 @@ class ContactRepliedView(APIView):
     def send_replied_email(self, contact, replied_message):
         subject = 'Market Master Contact Replied'
         message = replied_message
-        from_email = settings.EMAIL_HOST_USER
+        from_email = settings.EMAIL_SENDER
         recipient_list = [contact.email]
         send_mail(subject, message, from_email, recipient_list)

@@ -24,3 +24,21 @@ application = get_wsgi_application()
 # x = UserTemplate.objects.filter(user_id=1).first()
 
 # print(x.template.user_templates.all())
+
+# from store_app.utils import create_subdomain
+
+# print(create_subdomain('xyz.marketmaster.me', '13.37.204.72'))
+
+from django.conf import settings
+from django.core.mail import send_mail
+def send_mail_test(email, token='abc'):
+    subject = 'Your forget password link'
+    message = f'Hi , '
+    email_from = settings.EMAIL_SENDER
+    recipient_list = [email]
+    print(444,email_from,email,token)
+    send_mail(subject, message, email_from, recipient_list, fail_silently=False)
+    print(33)
+    return True
+
+# print(send_mail_test('adnanashraf4423@gmail.com'))
