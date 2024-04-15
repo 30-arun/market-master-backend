@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'account',
     'products',
     'orders',
+    'utils'
 ]
 
 APPEND_SLASH = True

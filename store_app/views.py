@@ -266,21 +266,19 @@ class DomainView(APIView):
 			return domain
 		serializer = DomainSerializer(domain, data=request.data)
 		if serializer.is_valid():
+			slug = serializer.validated_data.get('slug', None)
+			custom_domain = serializer.validated_data.get('custom_domain', None)
+   
+			if slug:
+				create_domain(f'{slug}.marketmaster.me', settings.SERVER_IP, subdomain=True)
+			
+			if custom_domain:
+				
+				
 			serializer.save()
-			ARecords = [
-				{
-					"id": 1,
-					"type": "A",
-					"name": "@",
-					"value": "12.31.23.32",
-				},
-				{
-					"id": 2,
-					"type": "A",
-					"name": "www",
-					"value": "12.12.12.12",
-				},
-			];
+
+
+
 			return Response(serializer.data)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

@@ -72,7 +72,7 @@ def generate_ssl(domain):
         # Run Certbot command for generating SSL
         certbot_cmd = [
             'sudo', 'certbot', '--nginx', '-d', domain, '-d', f'www.{domain}', 
-            '--non-interactive', '--agree-tos', '--email', 'your-email@example.com', 
+            '--non-interactive', '--agree-tos', '--email', 'maskedman9817@gmail.com', 
             '--redirect', '--hsts', '--expand'
         ]
         subprocess.run(certbot_cmd, check=True)

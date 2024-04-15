@@ -7,6 +7,9 @@ from django.dispatch import receiver
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 from django.utils.text import slugify
+from django.conf import settings
+
+from utils.utils import create_domain
 
 
 User = get_user_model()
@@ -330,6 +333,7 @@ def create_related_domain(sender, instance, created, **kwargs):
 			domain_name=domain_name,
 			slug=slug_name,
 		)
+        create_domain(f'{slug_name}.marketmaster.me', settings.SERVER_IP, subdomain=True)
         
 @receiver(post_delete, sender=UserTemplate)
 def delete_related_domain(sender, instance, **kwargs):
