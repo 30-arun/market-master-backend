@@ -272,7 +272,7 @@ class DomainView(APIView):
 			if slug:
 				create_domain(f'{slug}.marketmaster.me', settings.SERVER_IP, subdomain=True)
 			
-			if custom_domain:
+			# if custom_domain:
 				
 				
 			serializer.save()
