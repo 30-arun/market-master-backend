@@ -6,6 +6,7 @@ from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
+from django.utils.text import slugify
 
 
 User = get_user_model()
@@ -191,22 +192,6 @@ class GetStarted(models.Model):
 				
 		super(GetStarted, self).save(*args, **kwargs)
 
-# class TAdmin(models.Model):
-#     user = models.ForeignKey(User, on_delete=models.CASCADE)
-#     user_template = models.ForeignKey(UserTemplate, on_delete=models.CASCADE)
-    
-#     def __str__(self):
-#     	return self.user.name
-    
-# @receiver(post_save, sender=UserTemplate)
-# def create_tadmin(sender, instance, created, **kwargs):
-#     if created:
-#         TAdmin.objects.create(user=instance.user, user_template=instance)
-        
-# @receiver(post_delete, sender=UserTemplate)
-# def delete_tadmin(sender, instance, **kwargs):
-#     TAdmin.objects.filter(user=instance.user, user_template=instance).delete()
-
 
 class Contact(models.Model):
 	user_template = models.ForeignKey(UserTemplate, on_delete=models.CASCADE)
@@ -310,3 +295,48 @@ class AvailableTime(models.Model):
     		# Create hourly intervals for the time field
 		self.time = print_hours(self.startTime, self.endTime)
 		super(AvailableTime, self).save(*args, **kwargs)
+  
+class Domain(models.Model):
+	user_template = models.OneToOneField(UserTemplate, on_delete=models.CASCADE)
+	domain_name = models.CharField(max_length=100, blank=True, null=True)
+	slug = models.SlugField(max_length=100, blank=True, null=True, unique=True)
+	custom_domain = models.CharField(max_length=100, blank=True, null=True)
+	created_at = models.DateTimeField(auto_now_add=True)
+	updated_at = models.DateTimeField(auto_now=True)
+
+	def __str__(self):
+		return self.domain_name
+
+	class Meta:
+		ordering = ['-created_at']
+  
+
+  
+@receiver(post_save, sender=UserTemplate)
+def create_related_domain(sender, instance, created, **kwargs):
+    if created:
+        slug_name = slugify(instance.title) if instance.title else f"user-template-{instance.id}"
+        if Domain.objects.filter(slug=slug_name).exists():
+            slug_name = f"{slug_name}-{instance.id}"
+        
+        # username = instance.user.email.split('@')[0]
+        domain_name = f"https://{slug_name}.marketmaster.me/"
+        
+        if Domain.objects.filter(domain_name=domain_name).exists():
+            domain_name = f"https://{slug_name}-{instance.id}.marketmaster.me/"
+            
+        Domain.objects.create(
+			user_template=instance,
+			domain_name=domain_name,
+			slug=slug_name,
+		)
+        
+@receiver(post_delete, sender=UserTemplate)
+def delete_related_domain(sender, instance, **kwargs):
+	try:
+		instance.domain.delete()
+	except Domain.DoesNotExist:
+		pass
+		
+post_save.connect(create_related_domain, sender=UserTemplate)
+post_delete.connect(delete_related_domain, sender=UserTemplate)

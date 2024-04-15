@@ -9,7 +9,7 @@ import stripe
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from rest_framework.exceptions import NotFound
-
+from django.conf import settings
 stripe.api_key = settings.STRIPE_SECRET_KEY
 User = get_user_model()
 
@@ -156,6 +156,30 @@ class ContactView(APIView):
 		contacts.delete()
 		return Response(status=status.HTTP_204_NO_CONTENT)
 
+# contact replied view
+class ContactRepliedView(APIView):
+	def post(self, request, format=None):
+		contact_id = request.data.get('contact_id')
+		replied_message = request.data.get('replied_message')
+		if not contact_id or not replied_message:
+			return Response({"error": "Missing contact_id or replied_message."}, status=status.HTTP_400_BAD_REQUEST)
+		try:
+			contact = Contact.objects.get(id=contact_id)
+		except Contact.DoesNotExist:
+			raise NotFound(detail="Contact not found.")
+		self.send_replied_email(contact, replied_message)
+		contact.replied = True
+		contact.replied_message = replied_message
+		contact.save()
+		return Response({"message": "Replied status updated and email sent."}, status=status.HTTP_200_OK)
+
+	def send_replied_email(self, contact, replied_message):
+		subject = 'Market Master Contact Replied'
+		message = replied_message
+		from_email = settings.EMAIL_HOST_USER
+		recipient_list = [contact.email]
+		send_mail(subject, message, from_email, recipient_list) 
+
 class AppointmentView(APIView):
     		
 	def get(self, request, format=None):
@@ -221,25 +245,60 @@ class AvailableTimeView(APIView):
 		available_times.delete()
 		return Response(status=status.HTTP_204_NO_CONTENT)
 
-class ContactRepliedView(APIView):
-    def post(self, request, format=None):
-        contact_id = request.data.get('contact_id')
-        replied_message = request.data.get('replied_message')
-        if not contact_id or not replied_message:
-            return Response({"error": "Missing contact_id or replied_message."}, status=status.HTTP_400_BAD_REQUEST)
-        try:
-            contact = Contact.objects.get(id=contact_id)
-        except Contact.DoesNotExist:
-            raise NotFound(detail="Contact not found.")
-        self.send_replied_email(contact, replied_message)
-        contact.replied = True
-        contact.replied_message = replied_message
-        contact.save()
-        return Response({"message": "Replied status updated and email sent."}, status=status.HTTP_200_OK)
+
+class DomainView(APIView):
+	def get_object(self, pk):
+		try:
+			return Domain.objects.get(user_template_id=pk)
+		except Domain.DoesNotExist:
+			return Response({'error': 'Domain not found'}, status=status.HTTP_404_NOT_FOUND)
+
+	def get(self, request, pk, format=None):
+		domain = self.get_object(pk)
+		if isinstance(domain, Response):
+			return domain
+		serializer = DomainSerializer(domain)
+		return Response(serializer.data)
+
+	def put(self, request, pk, format=None):
+		domain = self.get_object(pk)
+		if isinstance(domain, Response):
+			return domain
+		serializer = DomainSerializer(domain, data=request.data)
+		if serializer.is_valid():
+			serializer.save()
+			ARecords = [
+				{
+					"id": 1,
+					"type": "A",
+					"name": "@",
+					"value": "12.31.23.32",
+				},
+				{
+					"id": 2,
+					"type": "A",
+					"name": "www",
+					"value": "12.12.12.12",
+				},
+			];
+			return Response(serializer.data)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     
-    def send_replied_email(self, contact, replied_message):
-        subject = 'Market Master, Contact Replied'
-        message = replied_message
-        from_email = settings.EMAIL_SENDER
-        recipient_list = [contact.email]
-        send_mail(subject, message, from_email, recipient_list)
+class SlugAPIView(APIView):
+    def get(self, request, slug, format=None):
+        try:
+            user_template = Domain.objects.get(slug=slug).user_template
+            serializer = SlugSerializer(user_template)
+           
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Domain.DoesNotExist:
+            return Response({"message": "Info not found"}, status=status.HTTP_404_NOT_FOUND)
+    
+class SlugIdAPIView(APIView):
+	def get(self, request, slug, format=None):
+		try:
+			user_template = Domain.objects.get(slug=slug).user_template
+			return Response({"id": user_template.id, "user": user_template.user.id, "ecommerce": user_template.ecommerce})
+		except Domain.DoesNotExist:
+			return Response({"message": "Info not found"}, status=status.HTTP_404_NOT_FOUND)

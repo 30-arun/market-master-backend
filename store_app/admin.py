@@ -43,8 +43,8 @@ class UserTemplateAdmin(admin.ModelAdmin):
     )
 
 class ContactAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'email', 'user_template', 'created_at')
-    list_filter = ('user_template', 'created_at')
+    list_display = ('id', 'name', 'email', 'user_template', 'replied', 'created_at')
+    list_filter = ('user_template', 'replied', 'created_at')
     search_fields = ('name', 'email', 'message', 'user_template__title')
     readonly_fields = ('created_at',)
     
@@ -60,7 +60,6 @@ class GetStartedAdmin(admin.ModelAdmin):
     search_fields = ('business_name', 'user__username')
     readonly_fields = ('created_at', 'updated_at')
     
-    
 
 
 admin.site.register(Templates, TemplatesAdmin)
@@ -71,3 +70,4 @@ admin.site.register(Contact, ContactAdmin)
 admin.site.register(Appointment)
 admin.site.register(Booking)
 admin.site.register(AvailableTime)
+admin.site.register(Domain)
