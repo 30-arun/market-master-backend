@@ -16,8 +16,9 @@ CONFIG_FILE="/etc/nginx/sites-available/$DOMAIN"
 BACKUP_FILE="/etc/nginx/sites-available/$DOMAIN.backup"
 DATE=$(date +%Y%m%d%H%M)
 
-# Backup the original configuration
-cp $CONFIG_FILE $BACKUP_FILE-$DATE
+
+
+
 
 # Update or Create Nginx Configuration
 update_nginx_config() {
@@ -59,6 +60,8 @@ server {
 }
 EOF
     else
+        # Backup the original configuration
+        cp $CONFIG_FILE $BACKUP_FILE-$DATE
         # Update existing file
         sed -i "" "s|^[[:space:]]*\(server_name[[:space:]]*.*\);|\1 $DOMAIN www.$DOMAIN;|g" $CONFIG_FILE
     fi
