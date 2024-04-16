@@ -1,6 +1,7 @@
 import boto3
 from django.conf import settings
-
+from django.conf import settings
+from django.core.mail import send_mail
 import boto3
 from botocore.exceptions import ClientError
 
@@ -146,3 +147,13 @@ def update_nginx(domain, server_name=True):
         print(f"Failed to update Nginx configuration for {domain}: {e}", file=sys.stderr)
         return None
 
+
+def send_mail_test(email, token='abc'):
+    subject = 'Your forget password link'
+    message = f'Hi , '
+    email_from = settings.EMAIL_SENDER
+    recipient_list = [email]
+    print(444,email_from,email,token)
+    send_mail(subject, message, email_from, recipient_list, fail_silently=False)
+    print(33)
+    return True
