@@ -66,8 +66,8 @@ def create_domain(domain, ip_address, subdomain=True, previous_domain=False):
             'ResourceRecordSet': {
                 'Name': previous_domain,
                 'Type': 'A',
-                'TTL': previous_record['TTL'],
-                'ResourceRecords': [{'Value': previous_record['Value']}]
+                'TTL': 300,
+                'ResourceRecords': [{'Value': ip_address}]
             }
         })
     else:
