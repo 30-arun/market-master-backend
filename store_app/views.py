@@ -270,7 +270,9 @@ class DomainView(APIView):
 			custom_domain = serializer.validated_data.get('custom_domain', None)
    
 			if slug:
-				create_domain(f'{slug}.marketmaster.me', settings.SERVER_IP, subdomain=True)
+				previous_slug = domain.slug
+				
+				create_domain(f'{slug}.marketmaster.me', settings.SERVER_IP, True, f'{previous_slug}.marketmaster.me')
 			
 			# if custom_domain:
 				
