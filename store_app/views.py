@@ -10,6 +10,8 @@ from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from rest_framework.exceptions import NotFound
 from django.conf import settings
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 stripe.api_key = settings.STRIPE_SECRET_KEY
 User = get_user_model()
 
@@ -175,10 +177,17 @@ class ContactRepliedView(APIView):
 
 	def send_replied_email(self, contact, replied_message):
 		subject = 'Market Master Contact Replied'
-		message = replied_message
-		from_email = settings.EMAIL_SENDER
+		context = {'message': replied_message, 'contact_name': contact.name}
+		html_message = render_to_string('email_reply.html', context)
+		plain_message = strip_tags(html_message)
+		from_name = "Market Master"
+		from_email = f"{from_name} <{settings.EMAIL_SENDER}>"
 		recipient_list = [contact.email]
-		send_mail(subject, message, from_email, recipient_list) 
+
+		try:
+			send_mail(subject, plain_message, from_email, recipient_list, html_message=html_message)
+		except Exception as e:
+			print(f"Failed to send email: {e}")
 
 class AppointmentView(APIView):
     		
