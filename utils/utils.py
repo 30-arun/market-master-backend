@@ -64,7 +64,7 @@ def create_domain(domain, ip_address, subdomain=True, previous_domain=False):
             record_set['Changes'].append({
             'Action': 'DELETE',
             'ResourceRecordSet': {
-                'Name': domain,
+                'Name': previous_domain,
                 'Type': 'A',
                 'TTL': previous_record['TTL'],
                 'ResourceRecords': [{'Value': previous_record['Value']}]
