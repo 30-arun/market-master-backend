@@ -66,14 +66,17 @@ class SendPasswordResetEmailSerializer(serializers.Serializer):
       print('Encoded UID', uid)
       token = PasswordResetTokenGenerator().make_token(user)
       print('Password Reset Token', token)
-      link = 'http://localhost:3000/changepassword/'+uid+'/'+token
+      link = 'http://localhost:3000/change-password/'+uid+'/'+token
       print('Password Reset Link', link)
       # Send EMail
       body = 'Click Following Link to Reset Your Password '+link
       data = {
+        'from_name':'Market Master',
+        'user_name':user.name,
         'subject':'Reset Your Password',
         'body':body,
-        'to_email':user.email
+        'to_email':user.email,
+        'reset_link':link,
       }
       Util.send_email(data)
       return attrs

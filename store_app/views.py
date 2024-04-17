@@ -12,6 +12,7 @@ from rest_framework.exceptions import NotFound
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from django.db.models import Q
 stripe.api_key = settings.STRIPE_SECRET_KEY
 User = get_user_model()
 
@@ -174,11 +175,11 @@ class ContactRepliedView(APIView):
 		contact.replied_message = replied_message
 		contact.save()
 		return Response({"message": "Replied status updated and email sent."}, status=status.HTTP_200_OK)
-
+  
 	def send_replied_email(self, contact, replied_message):
 		subject = 'Market Master Contact Replied'
 		context = {'message': replied_message, 'contact_name': contact.name}
-		html_message = render_to_string('email_reply.html', context)
+		html_message = render_to_string('reply_template.html', context)
 		plain_message = strip_tags(html_message)
 		from_name = "Market Master"
 		from_email = f"{from_name} <{settings.EMAIL_SENDER}>"
@@ -186,6 +187,7 @@ class ContactRepliedView(APIView):
 
 		try:
 			send_mail(subject, plain_message, from_email, recipient_list, html_message=html_message)
+			print("Email sent successfully.")
 		except Exception as e:
 			print(f"Failed to send email: {e}")
 
@@ -275,21 +277,21 @@ class DomainView(APIView):
 			return domain
 		serializer = DomainSerializer(domain, data=request.data)
 		if serializer.is_valid():
-			slug = serializer.validated_data.get('slug', None)
-			custom_domain = serializer.validated_data.get('custom_domain', None)
-   
-			if slug:
-				previous_slug = domain.slug
-				
-				create_domain(f'{slug}.marketmaster.me', settings.SERVER_IP, True, f'{previous_slug}.marketmaster.me')
-			
-			# if custom_domain:
-				
-				
 			serializer.save()
-
-
-
+			ARecords = [
+				{
+					"id": 1,
+					"type": "A",
+					"name": "@",
+					"value": "12.31.23.32",
+				},
+				{
+					"id": 2,
+					"type": "A",
+					"name": "www",
+					"value": "12.12.12.12",
+				},
+			];
 			return Response(serializer.data)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -297,17 +299,19 @@ class DomainView(APIView):
 class SlugAPIView(APIView):
     def get(self, request, slug, format=None):
         try:
-            user_template = Domain.objects.get(slug=slug).user_template
+            # filter domain by slug or custom_domain using Q object
+            user_template = UserTemplate.objects.filter(Q(domain__slug=slug) | Q(domain__custom_domain=slug)).first()
             serializer = SlugSerializer(user_template)
            
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Domain.DoesNotExist:
             return Response({"message": "Info not found"}, status=status.HTTP_404_NOT_FOUND)
-    
+        
+
 class SlugIdAPIView(APIView):
 	def get(self, request, slug, format=None):
 		try:
-			user_template = Domain.objects.get(slug=slug).user_template
+			user_template = UserTemplate.objects.filter(Q(domain__slug=slug) | Q(domain__custom_domain=slug)).first()
 			return Response({"id": user_template.id, "user": user_template.user.id, "ecommerce": user_template.ecommerce})
 		except Domain.DoesNotExist:
 			return Response({"message": "Info not found"}, status=status.HTTP_404_NOT_FOUND)

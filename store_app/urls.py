@@ -20,7 +20,7 @@ urlpatterns = [
     path('booking/', BookingView.as_view(), name='booking'),
     path('available-time/', AvailableTimeView.as_view(), name='available-time'),
     path('domain/<int:pk>/', DomainView.as_view(), name='domain-detail'),
-    path('slug/<slug:slug>/', SlugAPIView.as_view(), name='slug_by_slug'),
-    path('slug_id/<slug:slug>/', SlugIdAPIView.as_view(), name='slug_by_id'),
+    path('slug/<str:slug>/', SlugAPIView.as_view(), name='slug_by_slug'),
+    path('slug_id/<str:slug>/', SlugIdAPIView.as_view(), name='slug_by_id'),
 
 ]
