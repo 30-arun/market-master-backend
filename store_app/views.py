@@ -313,5 +313,5 @@ class SlugIdAPIView(APIView):
 		try:
 			user_template = UserTemplate.objects.filter(Q(domain__slug=slug) | Q(domain__custom_domain=slug)).first()
 			return Response({"id": user_template.id, "user": user_template.user.id, "ecommerce": user_template.ecommerce})
-		except Domain.DoesNotExist:
-			return Response({"message": "Info not found"}, status=status.HTTP_404_NOT_FOUND)
+		except Exception as e:
+			return Response({"message": "Info not found, "+str(e)}, status=status.HTTP_404_NOT_FOUND)
