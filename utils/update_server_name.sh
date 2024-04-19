@@ -23,7 +23,7 @@ update_nginx_config() {
         # Backup the original configuration
         cp $CONFIG_FILE $BACKUP_FILE-$DATE
         # Update existing file
-        sed -i "s|^[[:space:]]*\(server_name[[:space:]]*.*\);|\1 $DOMAIN www.$DOMAIN;|g" $CONFIG_FILE
+        sudo sed -i "s|^[[:space:]]*\(server_name[[:space:]]*.*\);|\1 $DOMAIN www.$DOMAIN;|g" $CONFIG_FILE
 }
 
 # Call function to update Nginx configuration
