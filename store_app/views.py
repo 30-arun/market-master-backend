@@ -3,6 +3,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.generics import *
 from rest_framework.views import APIView
+
+from utils.utils import create_domain, generate_ssl
 from .models import *
 from .serializers import *
 import stripe
@@ -25,11 +27,27 @@ class AllTemplateView(APIView):
         return Response(serializer.data)
     
 class GetTemplateView(APIView):
+    
+	def get_object(self, template_id):
+		try:
+			return Templates.objects.get(pk=template_id)
+		except Templates.DoesNotExist:
+			raise Http404
     	
 	def get(self, request, template_id, format=None):
 		templates = Templates.objects.filter(id=template_id).first()
 		serializer = TemplateSerializer(templates)
 		return Response(serializer.data, status=status.HTTP_200_OK)
+
+	def put(self, request, template_id, format=None):
+		templates = self.get_object(template_id)
+		serializer = TemplateSerializer(templates, data=request.data)
+		if serializer.is_valid():
+			serializer.save()
+			return Response(serializer.data)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+	
 
 class UserTemplateView(APIView):
     	
@@ -182,7 +200,7 @@ class ContactRepliedView(APIView):
 		html_message = render_to_string('reply_template.html', context)
 		plain_message = strip_tags(html_message)
 		from_name = "Market Master"
-		from_email = f"{from_name} <{settings.EMAIL_SENDER}>"
+		from_email = f"{from_name} <{settings.EMAIL_HOST_USER}>"
 		recipient_list = [contact.email]
 
 		try:
@@ -277,21 +295,20 @@ class DomainView(APIView):
 			return domain
 		serializer = DomainSerializer(domain, data=request.data)
 		if serializer.is_valid():
+			slug = serializer.validated_data.get('slug', None)
+			custom_domain = serializer.validated_data.get('custom_domain', None)
+   
+			if slug:
+				previous_slug = domain.slug
+				
+				create_domain(f'{slug}.marketmaster.me', settings.SERVER_IP, True, f'{previous_slug}.marketmaster.me')
+			
+			if custom_domain:
+				generate_ssl(custom_domain)
+				
 			serializer.save()
-			ARecords = [
-				{
-					"id": 1,
-					"type": "A",
-					"name": "@",
-					"value": "12.31.23.32",
-				},
-				{
-					"id": 2,
-					"type": "A",
-					"name": "www",
-					"value": "12.12.12.12",
-				},
-			];
+				
+
 			return Response(serializer.data)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -304,8 +321,8 @@ class SlugAPIView(APIView):
             serializer = SlugSerializer(user_template)
            
             return Response(serializer.data, status=status.HTTP_200_OK)
-        except Domain.DoesNotExist:
-            return Response({"message": "Info not found"}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"message": "domain not found"}, status=status.HTTP_404_NOT_FOUND)
         
 
 class SlugIdAPIView(APIView):
@@ -314,4 +331,4 @@ class SlugIdAPIView(APIView):
 			user_template = UserTemplate.objects.filter(Q(domain__slug=slug) | Q(domain__custom_domain=slug)).first()
 			return Response({"id": user_template.id, "user": user_template.user.id, "ecommerce": user_template.ecommerce})
 		except Exception as e:
-			return Response({"message": "Info not found, "+str(e)}, status=status.HTTP_404_NOT_FOUND)
+			return Response({"message": "domain not found"}, status=status.HTTP_404_NOT_FOUND)

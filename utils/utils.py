@@ -5,6 +5,8 @@ from django.core.mail import send_mail
 import boto3
 from botocore.exceptions import ClientError
 
+from store_app.models import Domain
+
 def get_dns_record(domain, record_type, hosted_zone_id, client):
     """
     Retrieve a DNS record from AWS Route 53.
@@ -114,15 +116,20 @@ def generate_ssl(domain):
     Generate or renew an SSL certificate for a domain using Certbot.
     """
     try:
+        custom_domains = Domain.objects.exclude(custom_domain__isnull=True).exclude(custom_domain='').values_list('custom_domain', flat=True)
+        custom_domains_list = list(custom_domains)
+        expanded_domains_list = custom_domains_list + [f'www.{domain}' for domain in custom_domains_list]
+        all_custom_domains_list = f'*.marketmaster.me,marketmaster.me,' + ','.join(expanded_domains_list) + f',{domain},www.{domain}'
         # Run Certbot command for generating SSL
         certbot_cmd = [
-            'sudo', 'certbot', '--nginx', 
+            'sudo', 'certbot', 'certonly', '--nginx', 
             '--non-interactive', '--agree-tos', '--email', 'maskedman9817@gmail.com', 
-            '--redirect', '--expand', '--domains', f'*.marketmaster.me,marketmaster.me,{domain},www.{domain}'
+            '--redirect', '--expand', '--domains', all_custom_domains_list , '--cert-name', 'abc'
         ]
         update_nginx(domain, server_name=True)
         subprocess.run(certbot_cmd, check=True)
         print(f"SSL certificate generated for {domain}")
+        return True
     except subprocess.CalledProcessError as e:
         print(f"Failed to generate SSL certificate for {domain}: {e}", file=sys.stderr)
         return None

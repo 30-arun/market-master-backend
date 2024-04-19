@@ -60,14 +60,24 @@ class GetStartedAdmin(admin.ModelAdmin):
     search_fields = ('business_name', 'user__username')
     readonly_fields = ('created_at', 'updated_at')
     
+class AppointmentAdmin(admin.ModelAdmin):  
+    list_display = ('user_template', 'name', 'email', 'date', 'time', 'time_since_updated')
+    
+class BookingAdmin(admin.ModelAdmin):
+    list_display = ('user_template', 'name', 'email', 'date', 'time', 'time_since_updated')
 
-
+class AvailableTimeAdmin(admin.ModelAdmin):
+    list_display = ('user_template', 'date', 'time')
+class DomainAdmin(admin.ModelAdmin):
+    list_display = ('user_template', 'slug', 'custom_domain', 'created_at')
+    
+    
 admin.site.register(Templates, TemplatesAdmin)
 admin.site.register(UserTemplate, UserTemplateAdmin)
 admin.site.register(QrCodeHistory, QrCodeHistoryAdmin)
 admin.site.register(GetStarted, GetStartedAdmin)
 admin.site.register(Contact, ContactAdmin)
-admin.site.register(Appointment)
-admin.site.register(Booking)
-admin.site.register(AvailableTime)
-admin.site.register(Domain)
+admin.site.register(Appointment, AppointmentAdmin)
+admin.site.register(Booking, BookingAdmin)
+admin.site.register(AvailableTime, AvailableTimeAdmin)
+admin.site.register(Domain, DomainAdmin)
