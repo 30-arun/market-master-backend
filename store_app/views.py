@@ -195,12 +195,12 @@ class ContactRepliedView(APIView):
 		return Response({"message": "Replied status updated and email sent."}, status=status.HTTP_200_OK)
   
 	def send_replied_email(self, contact, replied_message):
-		subject = 'Market Master Contact Replied'
+		subject = 'Market Master, Replied'
 		context = {'message': replied_message, 'contact_name': contact.name}
 		html_message = render_to_string('reply_template.html', context)
 		plain_message = strip_tags(html_message)
 		from_name = "Market Master"
-		from_email = f"{from_name} <{settings.EMAIL_HOST_USER}>"
+		from_email = f"{from_name} <{settings.EMAIL_SENDER}>"
 		recipient_list = [contact.email]
 
 		try:
