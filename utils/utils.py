@@ -118,7 +118,7 @@ def generate_ssl(domain):
         certbot_cmd = [
             'sudo', 'certbot', '--nginx', 
             '--non-interactive', '--agree-tos', '--email', 'maskedman9817@gmail.com', 
-            '--redirect', '--expand'
+            '--redirect', '--expand', '--domains', f'*.marketmaster.me,marketmaster.me,{domain},www.{domain}'
         ]
         update_nginx(domain, server_name=True)
         subprocess.run(certbot_cmd, check=True)
