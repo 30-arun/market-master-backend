@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 from django.utils.text import slugify
 
-from utils.utils import create_domain
+from utils.domain import create_domain
 
 
 User = get_user_model()

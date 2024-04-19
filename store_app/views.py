@@ -4,7 +4,8 @@ from rest_framework import status
 from rest_framework.generics import *
 from rest_framework.views import APIView
 
-from utils.utils import create_domain, generate_ssl
+from utils.utils import generate_ssl
+from utils.domain import create_domain
 from .models import *
 from .serializers import *
 import stripe
