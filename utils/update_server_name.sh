@@ -1,15 +1,13 @@
 #!/bin/bash
 
 # Check if the correct number of arguments was provided
-if [ "$#" -ne 3 ]; then
-    echo "Usage: $0 <domain> <ssl_certificate_path> <ssl_key_path>"
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 <domain>"
     exit 1
 fi
 
 # Arguments
 DOMAIN=$1
-SSL_CERT=$2
-SSL_KEY=$3
 
 # Paths
 CONFIG_FILE="/etc/nginx/sites-available/market-master"
@@ -25,7 +23,7 @@ update_nginx_config() {
         # Backup the original configuration
         cp $CONFIG_FILE $BACKUP_FILE-$DATE
         # Update existing file
-        sed -i "" "s|^[[:space:]]*\(server_name[[:space:]]*.*\);|\1 $DOMAIN www.$DOMAIN;|g" $CONFIG_FILE
+        sed -i "s|^[[:space:]]*\(server_name[[:space:]]*.*\);|\1 $DOMAIN www.$DOMAIN;|g" $CONFIG_FILE
 }
 
 # Call function to update Nginx configuration
