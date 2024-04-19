@@ -12,8 +12,8 @@ SSL_CERT=$2
 SSL_KEY=$3
 
 # Paths
-CONFIG_FILE="/etc/nginx/sites-available/$DOMAIN"
-BACKUP_FILE="/etc/nginx/sites-available/$DOMAIN.backup"
+CONFIG_FILE="/etc/nginx/sites-available/market-master"
+BACKUP_FILE="/etc/nginx/sites-available/market-master.backup"
 DATE=$(date +%Y%m%d%H%M)
 
 

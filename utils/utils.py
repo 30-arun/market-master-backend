@@ -116,9 +116,9 @@ def generate_ssl(domain):
     try:
         # Run Certbot command for generating SSL
         certbot_cmd = [
-            'sudo', 'certbot', '--nginx', '-d', domain, '-d', f'www.{domain}', 
+            'sudo', 'certbot', '--nginx', 
             '--non-interactive', '--agree-tos', '--email', 'maskedman9817@gmail.com', 
-            '--redirect', '--hsts', '--expand'
+            '--redirect', '--expand'
         ]
         update_nginx(domain, server_name=True)
         subprocess.run(certbot_cmd, check=True)
