@@ -139,7 +139,7 @@ def update_nginx(domain, server_name=True):
 
         # Command to run the Bash script
         update_script_cmd = [
-            'sudo', config_file, domain, ssl_cert, ssl_key
+            'sudo', config_file, domain
         ]
         subprocess.run(update_script_cmd, check=True)
         print(f"Nginx configuration updated for {domain}")
