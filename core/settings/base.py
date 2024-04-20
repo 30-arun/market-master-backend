@@ -143,7 +143,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = (os.path.join(ROOT_BASE_DIR, 'static'), TEMPLATES_DIR, )
+STATICFILES_DIRS = (os.path.join(ROOT_BASE_DIR, 'static'))
 STATIC_ROOT = os.path.join(ROOT_BASE_DIR,'staticfiles')
 
 STATICFILES_FINDERS = (
@@ -193,10 +193,6 @@ SIMPLE_JWT = {
 
 PASSWORD_RESET_TIMEOUT=900          # 900 Sec = 15 Min
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
