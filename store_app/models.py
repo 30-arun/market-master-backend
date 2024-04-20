@@ -9,8 +9,6 @@ from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 from django.utils.text import slugify
 
-from utils.domain import create_domain
-
 
 User = get_user_model()
 
@@ -31,8 +29,6 @@ FONT_CHOICES = [
     ('Reddit Mono', 'Reddit Mono'),
     ('Edu NSW', 'Edu NSW'),
 ]
-
-    
 class Templates(models.Model):
 	image = models.ImageField(upload_to='templates/', blank=True, null=True)
 	title = models.CharField(max_length=256, blank=True, null=True)
@@ -46,12 +42,14 @@ class Templates(models.Model):
 	ecommerce = models.BooleanField(default=False)
 	barber = models.BooleanField(default=False)
 	customizable = models.BooleanField(default=False)
+	blank = models.BooleanField(default=False)
+	deleted = models.BooleanField(default=False)
 	template_type = models.CharField(max_length=100, choices=TEMPLATE_CHOICES, blank=True, null=True)
 	created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
 	updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
-	
+
 	class Meta:
-		ordering = ['-created_at']
+		ordering = ['created_at']
 	
 	def __str__(self):
 		return f"Template: {self.title}, Customizable: {self.customizable}, Ecommerce: {self.ecommerce}, ID: {self.id}"
@@ -70,6 +68,7 @@ class UserTemplate(models.Model):
 	js_content = models.TextField(blank=True, null=True)
 	ecommerce = models.BooleanField(default=False)
 	barber = models.BooleanField(default=False)
+	blank = models.BooleanField(default=False)
 	font_type = models.CharField(max_length=100, choices=FONT_CHOICES, null=True, blank=True)
 	font_family = models.CharField(max_length=100, null=True, blank=True)
 	color_theme_pr = models.CharField(max_length=7, null=True, blank=True)
@@ -98,6 +97,10 @@ class UserTemplate(models.Model):
 		self.html_content3 = self.template.html_content3
 		self.ecommerce = self.template.ecommerce
 		self.barber = self.template.barber
+		if self.template.deleted:
+			self.blank = True
+		else:
+			self.blank = self.template.blank
   
 	def save(self, *args, **kwargs):
 		"""
@@ -114,7 +117,7 @@ class UserTemplate(models.Model):
 
 	def __str__(self):
     		return f"User Template: {self.title}, ID: {self.id}"
-
+  
 class GetStarted(models.Model):
 	user = models.ForeignKey(User, on_delete=models.CASCADE)
 	business_name = models.CharField(max_length=100)

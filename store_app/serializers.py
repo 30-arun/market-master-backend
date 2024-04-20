@@ -6,9 +6,7 @@ class TemplateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Templates
         fields = "__all__"
-        read_only_fields = ['id', 'image', 'title', 'description']
         
-# ======================================================================================
 
 class UserTemplateSerializer(serializers.ModelSerializer):
     template = TemplateSerializer()
