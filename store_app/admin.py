@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import *
 
 class TemplatesAdmin(admin.ModelAdmin):
-    list_display = ('id' ,'title', 'customizable', 'ecommerce', 'barber', 'created_at')
+    list_display = ('id' ,'title', 'customizable', 'ecommerce', 'barber', 'blank', 'created_at')
     list_filter = ('customizable', 'ecommerce', 'created_at')
     search_fields = ('title', 'description')
     readonly_fields = ('created_at', 'updated_at')
@@ -12,7 +12,7 @@ class TemplatesAdmin(admin.ModelAdmin):
         }),
         ('Advanced options', {
             'classes': ('collapse',),
-            'fields': ('css_cotent', 'js_content', 'ecommerce', 'barber', 'customizable', 'template_type')
+            'fields': ('css_cotent', 'js_content', 'ecommerce', 'barber', 'blank', 'customizable', 'template_type')
         }),
         ('Dates', {
             'fields': ('created_at', 'updated_at'),

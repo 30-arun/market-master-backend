@@ -157,3 +157,5 @@ server
 staticfiles
 
 migrations
+
+media
