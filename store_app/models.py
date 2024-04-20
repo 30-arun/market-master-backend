@@ -333,7 +333,6 @@ def create_related_domain(sender, instance, created, **kwargs):
 			domain_name=domain_name,
 			slug=slug_name,
 		)
-        create_domain(f'{slug_name}.marketmaster.me', settings.SERVER_IP, True)
         
         
 @receiver(post_delete, sender=UserTemplate)

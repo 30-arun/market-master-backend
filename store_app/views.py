@@ -5,7 +5,6 @@ from rest_framework.generics import *
 from rest_framework.views import APIView
 
 from utils.utils import generate_ssl
-from utils.domain import create_domain
 from .models import *
 from .serializers import *
 import stripe
@@ -299,11 +298,6 @@ class DomainView(APIView):
 			slug = serializer.validated_data.get('slug', None)
 			custom_domain = serializer.validated_data.get('custom_domain', None)
    
-			if slug:
-				previous_slug = domain.slug
-				
-				create_domain(f'{slug}.marketmaster.me', settings.SERVER_IP, True, f'{previous_slug}.marketmaster.me')
-			
 			if custom_domain:
 				generate_ssl(custom_domain)
 				
